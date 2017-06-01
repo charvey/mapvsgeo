@@ -65,6 +65,9 @@ namespace mapvsgeo
         static Dictionary<string, string> StopNames = File.ReadAllLines("google_rail/stops.txt").Skip(1)
             .Select(l => l.Split(',')).ToDictionary(l => l[0], l => l[1]);
 
+        static Dictionary<string, string> RouteColors = File.ReadAllLines("google_rail/routes.txt").Skip(1)
+            .Select(l => l.Split(',')).ToDictionary(l => l[0], l => l[6]);
+
         static void Main(string[] args)
         {
             var mapNormalizer = Normalizer(0, 1400, 0, 1400);
@@ -75,10 +78,11 @@ namespace mapvsgeo
             );
             var normalizedGeoPoints = GeoPoints.ToDictionary(x => x.Key, x => geoNormalizer(x.Value));
 
-            using (var stream = new FileStream("map.svg", FileMode.Create))
+            using (var stream = new FileStream("../../../map.svg", FileMode.Create))
             using (var writer = new StreamWriter(stream))
             {
-                writer.WriteLine("<svg viewBox='0 0 1 1' xmlns='http://www.w3.org/2000/svg'>");
+                writer.WriteLine("<svg viewBox='0 0 1 1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink'>");
+                writer.WriteLine("\t<image xlink:href='map.jpg' height='1' width='1'/>");
 
                 foreach (var route in Routes)
                 {
@@ -94,7 +98,7 @@ namespace mapvsgeo
                     var geoPoints = string.Join(" ", route.Stops.Select(s => normalizedGeoPoints[s]).Select(p => p.X + "," + p.Y));
 
                     writer.WriteLine($@"
-<polyline fill='none' stroke='orange' stroke-width='0.01'>
+<polyline fill='none' stroke-width='0.005'>
     <animate id='{route.Name}maptogeo' attributeName='points'
         dur='5s' fill='freeze'
         begin='0; {route.Name}geotomap.end'
@@ -103,10 +107,14 @@ namespace mapvsgeo
     />
     <animate id='{route.Name}geotomap' attributeName='points'
         dur='5s' fill='freeze'
-        begin='0; {route.Name}maptogeo.end'
+        begin='{route.Name}maptogeo.end'
         from='{geoPoints}'
         to='{mapPoints}'
     />
+    <animate id='{route.Name}maptogeocolor' attributeName='stroke'
+        from='#6b93ac' to='#{RouteColors[route.Name]}' dur='5s' fill='freeze' begin='0; {route.Name}maptogeocolor.end' />
+    <animate id='{route.Name}geotomapcolor' attributeName='stroke'
+        from='#{RouteColors[route.Name]}' to='#6b93ac' dur='5s' fill='freeze' begin='{route.Name}maptogeocolor.end' />
 </polyline>");
                 }
 
