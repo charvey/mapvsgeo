@@ -32,8 +32,13 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="CsvHelper, Version=2.0.0.0, Culture=neutral, PublicKeyToken=8c4959082be5c823, processorArchitecture=MSIL">
+      <HintPath>packages\CsvHelper.2.16.3.0\lib\net45\CsvHelper.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="System.IO.Compression.FileSystem" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -42,11 +47,33 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Files.cs" />
+    <Compile Include="Gtfs\AggregateGtfsFeed.cs" />
+    <Compile Include="Gtfs\Calendar.cs" />
+    <Compile Include="Gtfs\CalendarDate.cs" />
+    <Compile Include="Gtfs\CalendarDateMap.cs" />
+    <Compile Include="Gtfs\CalendarMap.cs" />
+    <Compile Include="Gtfs\GtfsFeed.cs" />
+    <Compile Include="Gtfs\GtfsFeedExtensions.cs" />
+    <Compile Include="Gtfs\Route.cs" />
+    <Compile Include="Gtfs\RouteMap.cs" />
+    <Compile Include="Gtfs\Stop.cs" />
+    <Compile Include="Gtfs\StopMap.cs" />
+    <Compile Include="Gtfs\StopTime.cs" />
+    <Compile Include="Gtfs\StopTimeMap.cs" />
+    <Compile Include="Gtfs\Trip.cs" />
+    <Compile Include="Gtfs\TripMap.cs" />
+    <Compile Include="Gtfs\ZipFileGtfsFeed.cs" />
+    <Compile Include="MapLine.cs" />
+    <Compile Include="MapPoints.cs" />
+    <Compile Include="Point.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="StopNames.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

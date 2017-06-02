@@ -2,127 +2,148 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Data.Gtfs;
 
 namespace mapvsgeo
 {
     class Program
     {
-        static List<Route> Routes = new List<Route>
-        {
-            new Route("NOR",new[]{"90004","90005","90006","90007","90008","90218","90219","90220","90221","90222","90223","90224","90225","90226","90227","90228" }),
-            new Route("PAO",new[]{"90006","90005","90004","90522","90521","90520","90519","90518","90517","90516","90515","90514","90513","90512","90511","90510","90509","90508","90507","90506","90505","90504","90503","90502","90501"})
-        };
+	    private static List<MapLine> MapLines => new List<MapLine>
+	    {
+		    //google_rail
+		    new MapLine("AIR", StopsFromTrip("AIR_401_V1_M")),
+		    new MapLine("CHE", StopsFromTrip("CHE_5712_V5_M")),
+		    new MapLine("CHW", new string[0]),
+		    new MapLine("LAN", StopsFromTrip("LAN_516_V77_M").Take(5).Concat(StopsFromTrip("LAN_6506_V5_M").Skip(4)).ToArray()),
+		    new MapLine("MED", new string[0]),
+		    new MapLine("FOX", new string[0]),
+		    new MapLine("NOR", StopsFromTrip("NOR_216_V5_M")),
+		    new MapLine("PAO", StopsFromTrip("PAO_509_V5_M")),
+		    new MapLine("CYN", new string[0]),
+		    new MapLine("TRE", StopsFromTrip("TRE_705_V5_M")),
+		    new MapLine("WAR", new string[0]),
+		    new MapLine("WIL", StopsFromTrip("WIL_9243_V5_M")),
+		    new MapLine("WTR", new string[0]),
+		    //google_bus
+		    /* Still need trolleys and chinatown subway */
+		    new MapLine("16184", new string[0]), //101
+		    new MapLine("16186", new string[0]), //102
+		    new MapLine("16301", new string[0]), //BSL
+		    new MapLine("16303", StopsFromTrip("588669")), //MFL
+		    new MapLine("16210", StopsFromTrip("666614")), //NHSL
+		    ////patco
+		    //new MapLine("1", new string[0]) //PATCO
+	    };
 
-        static Dictionary<string, Point> MapPoints = new Dictionary<string, Point>
-        {
-            {"90004",new Point(740,762)},
-            {"90005",new Point(822,762)},
-            {"90006",new Point(932,762)},
-            {"90007",new Point(924,644)},
-            {"90008",new Point(904,626)},
-            {"90218",new Point(599,612)},
-            {"90219",new Point(580,590)},
-            {"90220",new Point(560,572)},
-            {"90221",new Point(540,552)},
-            {"90222",new Point(520,532)},
-            {"90223",new Point(500,512)},
-            {"90224",new Point(480,494)},
-            {"90225",new Point(461,474)},
-            {"90226",new Point(416,430)},
-            {"90227",new Point(392,402)},
-            {"90228",new Point(358,366)},
+	    public static Lazy<GtfsFeed> feed = new Lazy<GtfsFeed>(() => new AggregateGtfsFeed(new[]
+	    {
+		    new ZipFileGtfsFeed("gtfs_public/google_rail.zip"),
+		    new ZipFileGtfsFeed("gtfs_public/google_bus.zip"),
+		    //new ZipFileGtfsFeed("PortAuthorityTransitCorporation.zip")
+	    }));
 
-            {"90522",new Point(460,719)},
-            {"90521",new Point(444,703)},
-            {"90520",new Point(426,684)},
-            {"90519",new Point(412,669)},
-            {"90518",new Point(394,653)},
-            {"90517",new Point(380,637)},
-            {"90516",new Point(364,619)},
-            {"90515",new Point(348,602)},
-            {"90514",new Point(332,587)},
-            {"90513",new Point(304,556)},
-            {"90512",new Point(288,540)},
-            {"90511",new Point(276,529)},
-            {"90510",new Point(264,516)},
-            {"90509",new Point(252,504)},
-            {"90508",new Point(240,491)},
-            {"90507",new Point(226,477)},
-            {"90506",new Point(216,466)},
-            {"90505",new Point(204,453)},
-            {"90504",new Point(192,440)},
-            {"90503",new Point(180,427)},
-            {"90502",new Point(166,414)},
-            {"90501",new Point(148,395)}
-        };
+	    private static Lazy<IReadOnlyList<StopTime>> stopTimes = new Lazy<IReadOnlyList<StopTime>>(() => feed.Value.StopTimes.ToList());
 
-        static Dictionary<string, Point> GeoPoints = File.ReadAllLines("google_rail/stops.txt").Skip(1)
-            .Select(l => l.Split(','))
-            .ToDictionary(l => l[0], l => new Point(double.Parse(l[4]), double.Parse(l[3])));
+	    private static string[] StopsFromTrip(string tripId)
+	    {
+		    return stopTimes.Value
+				.Where(st => st.TripId == tripId)
+			    .OrderBy(st => st.StopSequence)
+				.Select(s => s.StopId)
+				.ToArray();
+	    }
 
-        static Dictionary<string, string> StopNames = File.ReadAllLines("google_rail/stops.txt").Skip(1)
-            .Select(l => l.Split(',')).ToDictionary(l => l[0], l => l[1]);
+	    private static Dictionary<string, Point> GeoPoints => feed.Value.Stops.ToDictionary(s => s.StopId, s => new Point(s.StopLongitude, s.StopLatitude));
 
-        static Dictionary<string, string> RouteColors = File.ReadAllLines("google_rail/routes.txt").Skip(1)
-            .Select(l => l.Split(',')).ToDictionary(l => l[0], l => l[6]);
+	    private static Dictionary<string, string> RouteColors => feed.Value.Routes.ToDictionary(r => r.RouteId, r => r.RouteColor);
 
         static void Main(string[] args)
         {
+			Files.Foo();
+
             var mapNormalizer = Normalizer(0, 1400, 0, 1400);
-            var normalizedMapPoints = MapPoints.ToDictionary(x => x.Key, x => mapNormalizer(x.Value));
             var geoNormalizer = Normalizer(
                 GeoPoints.Values.Min(p => p.X), GeoPoints.Values.Max(p => p.X),
                 GeoPoints.Values.Max(p => p.Y), GeoPoints.Values.Min(p => p.Y)
             );
-            var normalizedGeoPoints = GeoPoints.ToDictionary(x => x.Key, x => geoNormalizer(x.Value));
+
+	        const string duration = "2.5s";
 
             using (var stream = new FileStream("../../../map.svg", FileMode.Create))
             using (var writer = new StreamWriter(stream))
             {
                 writer.WriteLine("<svg viewBox='0 0 1 1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink'>");
-                writer.WriteLine("\t<image xlink:href='map.jpg' height='1' width='1'/>");
+                writer.WriteLine($@"
+	<image xlink:href='map.jpg' height='1' width='1'>
+		<animate id='maptogeo' attributeName='opacity' from='1' to='0' dur='{duration}' begin='0; geotomap.end' />
+		<animate id='geotomap' attributeName='opacity' from='0' to='1' dur='{duration}' begin='maptogeo.end' />
+	</image>");
 
-                foreach (var route in Routes)
+                foreach (var mapLine in MapLines)
                 {
-                    var missing = route.Stops.Where(s => !normalizedMapPoints.ContainsKey(s));
-                    if (missing.Any())
-                    {
-                        foreach (var x in missing)
-                            Console.WriteLine($"Find coordinates for {StopNames[x]} ({x})");
-                        continue;
-                    }
-
-                    var mapPoints = string.Join(" ", route.Stops.Select(s => normalizedMapPoints[s]).Select(p => p.X + "," + p.Y));
-                    var geoPoints = string.Join(" ", route.Stops.Select(s => normalizedGeoPoints[s]).Select(p => p.X + "," + p.Y));
+	                var mapPoints = string.Join(" ", mapLine.Stops.Select(s => mapNormalizer(MapPoints.Get(s))).Select(p => p.X + "," + p.Y));
+	                var geoPoints = string.Join(" ", mapLine.Stops.Select(s => geoNormalizer(GeoPoints[s])).Select(p => p.X + "," + p.Y));
 
                     writer.WriteLine($@"
-<polyline fill='none' stroke-width='0.005'>
-    <animate id='{route.Name}maptogeo' attributeName='points'
-        dur='5s' fill='freeze'
-        begin='0; {route.Name}geotomap.end'
-        from='{mapPoints}'
-        to='{geoPoints}'
-    />
-    <animate id='{route.Name}geotomap' attributeName='points'
-        dur='5s' fill='freeze'
-        begin='{route.Name}maptogeo.end'
-        from='{geoPoints}'
-        to='{mapPoints}'
-    />
-    <animate id='{route.Name}maptogeocolor' attributeName='stroke'
-        from='#6b93ac' to='#{RouteColors[route.Name]}' dur='5s' fill='freeze' begin='0; {route.Name}maptogeocolor.end' />
-    <animate id='{route.Name}geotomapcolor' attributeName='stroke'
-        from='#{RouteColors[route.Name]}' to='#6b93ac' dur='5s' fill='freeze' begin='{route.Name}maptogeocolor.end' />
-</polyline>");
+	<polyline fill='none' stroke-width='0.005'>
+		<animate attributeName='points' dur='{duration}' fill='freeze' begin='0; geotomap.end'
+			from='{mapPoints}'
+			to='{geoPoints}'
+		/>
+		<animate attributeName='points' dur='{duration}' fill='freeze' begin='maptogeo.end'
+			from='{geoPoints}'
+			to='{mapPoints}'
+		/>
+		<animate attributeName='stroke' dur='{duration}' fill='freeze' begin='0; geotomap.end'
+			from='#6B93AC' to='#{RouteColors[mapLine.RouteId]}' />
+		<animate attributeName='stroke' dur='{duration}' fill='freeze' begin='maptogeo.end'
+			from='#{RouteColors[mapLine.RouteId]}' to='#6B93AC' />
+	</polyline>");
                 }
 
                 writer.WriteLine("</svg>");
             }
+
+            using (var stream = new FileStream("../../../geomatch.svg", FileMode.Create))
+            using (var writer = new StreamWriter(stream))
+            {
+                writer.WriteLine("<svg viewBox='0 0 1 1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink'>");
+                writer.WriteLine($@"
+	<image xlink:href='geo2.jpg' height='1' width='1'>
+	</image>");
+
+                foreach (var mapLine in MapLines)
+                {
+                    var geoPoints = string.Join(" ", mapLine.Stops.Select(s => geoNormalizer(GeoPoints[s])).Select(p => p.X + "," + p.Y));
+
+                    writer.WriteLine($@"
+	<polyline fill='none' stroke-width='0.005'
+        points='{geoPoints}' stroke='#{RouteColors[mapLine.RouteId]}' />");
+                }
+
+                writer.WriteLine("</svg>");
+            }
+
+            using (var stream = new FileStream("../../../debug.svg", FileMode.Create))
+	        using (var writer = new StreamWriter(stream))
+	        {
+		        writer.WriteLine("<svg viewBox='0 0 1 1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink'>");
+		        writer.WriteLine("\t<image xlink:href='map.jpg' height='1' width='1'/>");
+
+		        foreach (var stop in MapLines.SelectMany(r => r.Stops).Distinct())
+		        {
+			        var point = mapNormalizer(MapPoints.Get(stop));
+
+					writer.WriteLine($"\t<circle cx='{point.X}' cy='{point.Y}'  r='0.005' stroke='black' stroke-width='0.001' fill='none'/>");
+			        //writer.WriteLine($"\t<text x='{point.X + 0.05}' fill='orange' y='{point.Y}'>{StopNames.Get(stop)}</text>");
+			        //writer.WriteLine($"\t<text x='{point.X - 0.05}' fill='orange' y='{point.Y}'>{stop}</text>");
+				}
+
+		        writer.WriteLine("</svg>");
+	        }
         }
 
-        static Func<Point, Point> Normalizer(double leftX, double rightX, double topY, double bottomY)
+			static Func<Point, Point> Normalizer(double leftX, double rightX, double topY, double bottomY)
         {
             return p => Normalize(p, leftX, rightX, topY, bottomY);
         }
@@ -133,30 +154,6 @@ namespace mapvsgeo
                 (p.X - leftX) / (rightX - leftX),
                 (p.Y - topY) / (bottomY - topY)
             );
-        }
-    }
-
-    class Route
-    {
-        public string Name { get; }
-        public string[] Stops { get; }
-        
-        public Route(string name, string[] stops)
-        {
-            this.Name = name;
-            this.Stops = stops;
-        }
-    }
-
-    class Point
-    {
-        public double X { get; }
-        public double Y { get; }
-
-        public Point(double x, double y)
-        {
-            this.X = x;
-            this.Y = y;
         }
     }
 }
