@@ -13,7 +13,7 @@ namespace mapvsgeo
 		    //google_rail
 		    new MapLine("AIR", StopsFromTrip("AIR_401_V1_M")),
 		    new MapLine("CHE", StopsFromTrip("CHE_5712_V5_M")),
-		    new MapLine("CHW", new string[0]),
+		    new MapLine("CHW", StopsFromTrip("CHW_807_V5_M")),
 		    new MapLine("LAN", StopsFromTrip("LAN_516_V77_M").Take(5).Concat(StopsFromTrip("LAN_6506_V5_M").Skip(4)).ToArray()),
 		    new MapLine("MED", new string[0]),
 		    new MapLine("FOX", new string[0]),
