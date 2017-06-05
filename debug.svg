@@ -119,6 +119,12 @@
 	<circle cx='0.85' cy='0.277142857142857'  r='0.005' stroke='black' stroke-width='0.001' fill='none'/>
 	<circle cx='0.85' cy='0.262142857142857'  r='0.005' stroke='black' stroke-width='0.001' fill='none'/>
 	<circle cx='0.85' cy='0.204285714285714'  r='0.005' stroke='black' stroke-width='0.001' fill='none'/>
+	<circle cx='0.612142857142857' cy='0.222857142857143'  r='0.005' stroke='black' stroke-width='0.001' fill='none'/>
+	<circle cx='0.612857142857143' cy='0.211428571428571'  r='0.005' stroke='black' stroke-width='0.001' fill='none'/>
+	<circle cx='0.612142857142857' cy='0.197857142857143'  r='0.005' stroke='black' stroke-width='0.001' fill='none'/>
+	<circle cx='0.612857142857143' cy='0.187142857142857'  r='0.005' stroke='black' stroke-width='0.001' fill='none'/>
+	<circle cx='0.612142857142857' cy='0.174285714285714'  r='0.005' stroke='black' stroke-width='0.001' fill='none'/>
+	<circle cx='0.611428571428571' cy='0.155714285714286'  r='0.005' stroke='black' stroke-width='0.001' fill='none'/>
 	<circle cx='0.492857142857143' cy='0.764285714285714'  r='0.005' stroke='black' stroke-width='0.001' fill='none'/>
 	<circle cx='0.482857142857143' cy='0.774285714285714'  r='0.005' stroke='black' stroke-width='0.001' fill='none'/>
 	<circle cx='0.475' cy='0.782142857142857'  r='0.005' stroke='black' stroke-width='0.001' fill='none'/>
@@ -136,6 +142,19 @@
 	<circle cx='0.372857142857143' cy='0.885'  r='0.005' stroke='black' stroke-width='0.001' fill='none'/>
 	<circle cx='0.362857142857143' cy='0.893571428571429'  r='0.005' stroke='black' stroke-width='0.001' fill='none'/>
 	<circle cx='0.348571428571429' cy='0.906428571428571'  r='0.005' stroke='black' stroke-width='0.001' fill='none'/>
+	<circle cx='0.644285714285714' cy='0.242857142857143'  r='0.005' stroke='black' stroke-width='0.001' fill='none'/>
+	<circle cx='0.653571428571429' cy='0.232142857142857'  r='0.005' stroke='black' stroke-width='0.001' fill='none'/>
+	<circle cx='0.664285714285714' cy='0.221428571428571'  r='0.005' stroke='black' stroke-width='0.001' fill='none'/>
+	<circle cx='0.674285714285714' cy='0.211428571428571'  r='0.005' stroke='black' stroke-width='0.001' fill='none'/>
+	<circle cx='0.682857142857143' cy='0.201428571428571'  r='0.005' stroke='black' stroke-width='0.001' fill='none'/>
+	<circle cx='0.693571428571429' cy='0.191428571428571'  r='0.005' stroke='black' stroke-width='0.001' fill='none'/>
+	<circle cx='0.704285714285714' cy='0.180714285714286'  r='0.005' stroke='black' stroke-width='0.001' fill='none'/>
+	<circle cx='0.713571428571429' cy='0.171428571428571'  r='0.005' stroke='black' stroke-width='0.001' fill='none'/>
+	<circle cx='0.722857142857143' cy='0.161428571428571'  r='0.005' stroke='black' stroke-width='0.001' fill='none'/>
+	<circle cx='0.733571428571429' cy='0.151428571428571'  r='0.005' stroke='black' stroke-width='0.001' fill='none'/>
+	<circle cx='0.744285714285714' cy='0.142857142857143'  r='0.005' stroke='black' stroke-width='0.001' fill='none'/>
+	<circle cx='0.754285714285714' cy='0.13'  r='0.005' stroke='black' stroke-width='0.001' fill='none'/>
+	<circle cx='0.777142857142857' cy='0.105714285714286'  r='0.005' stroke='black' stroke-width='0.001' fill='none'/>
 	<circle cx='0.291428571428571' cy='0.562857142857143'  r='0.005' stroke='black' stroke-width='0.001' fill='none'/>
 	<circle cx='0.285714285714286' cy='0.572857142857143'  r='0.005' stroke='black' stroke-width='0.001' fill='none'/>
 	<circle cx='0.278571428571429' cy='0.579285714285714'  r='0.005' stroke='black' stroke-width='0.001' fill='none'/>
@@ -186,6 +205,30 @@
 	<circle cx='0.372857142857143' cy='0.748571428571429'  r='0.005' stroke='black' stroke-width='0.001' fill='none'/>
 	<circle cx='0.382857142857143' cy='0.757857142857143'  r='0.005' stroke='black' stroke-width='0.001' fill='none'/>
 	<circle cx='0.395714285714286' cy='0.772857142857143'  r='0.005' stroke='black' stroke-width='0.001' fill='none'/>
+	<circle cx='0.621428571428571' cy='0.327142857142857'  r='0.005' stroke='black' stroke-width='0.001' fill='none'/>
+	<circle cx='0.621428571428571' cy='0.346428571428571'  r='0.005' stroke='black' stroke-width='0.001' fill='none'/>
+	<circle cx='0.621428571428571' cy='0.37'  r='0.005' stroke='black' stroke-width='0.001' fill='none'/>
+	<circle cx='0.62' cy='0.387142857142857'  r='0.005' stroke='black' stroke-width='0.001' fill='none'/>
+	<circle cx='0.62' cy='0.398571428571429'  r='0.005' stroke='black' stroke-width='0.001' fill='none'/>
+	<circle cx='0.621428571428571' cy='0.407142857142857'  r='0.005' stroke='black' stroke-width='0.001' fill='none'/>
+	<circle cx='0.62' cy='0.417142857142857'  r='0.005' stroke='black' stroke-width='0.001' fill='none'/>
+	<circle cx='0.62' cy='0.434285714285714'  r='0.005' stroke='black' stroke-width='0.001' fill='none'/>
+	<circle cx='0.621428571428571' cy='0.460714285714286'  r='0.005' stroke='black' stroke-width='0.001' fill='none'/>
+	<circle cx='0.621428571428571' cy='0.468571428571429'  r='0.005' stroke='black' stroke-width='0.001' fill='none'/>
+	<circle cx='0.621428571428571' cy='0.487142857142857'  r='0.005' stroke='black' stroke-width='0.001' fill='none'/>
+	<circle cx='0.621428571428571' cy='0.498571428571429'  r='0.005' stroke='black' stroke-width='0.001' fill='none'/>
+	<circle cx='0.621428571428571' cy='0.507142857142857'  r='0.005' stroke='black' stroke-width='0.001' fill='none'/>
+	<circle cx='0.621428571428571' cy='0.518571428571429'  r='0.005' stroke='black' stroke-width='0.001' fill='none'/>
+	<circle cx='0.621428571428571' cy='0.591428571428571'  r='0.005' stroke='black' stroke-width='0.001' fill='none'/>
+	<circle cx='0.621428571428571' cy='0.614285714285714'  r='0.005' stroke='black' stroke-width='0.001' fill='none'/>
+	<circle cx='0.621428571428571' cy='0.647142857142857'  r='0.005' stroke='black' stroke-width='0.001' fill='none'/>
+	<circle cx='0.621428571428571' cy='0.660714285714286'  r='0.005' stroke='black' stroke-width='0.001' fill='none'/>
+	<circle cx='0.621428571428571' cy='0.674285714285714'  r='0.005' stroke='black' stroke-width='0.001' fill='none'/>
+	<circle cx='0.621428571428571' cy='0.685714285714286'  r='0.005' stroke='black' stroke-width='0.001' fill='none'/>
+	<circle cx='0.621428571428571' cy='0.698571428571429'  r='0.005' stroke='black' stroke-width='0.001' fill='none'/>
+	<circle cx='0.621428571428571' cy='0.715714285714286'  r='0.005' stroke='black' stroke-width='0.001' fill='none'/>
+	<circle cx='0.652857142857143' cy='0.504285714285714'  r='0.005' stroke='black' stroke-width='0.001' fill='none'/>
+	<circle cx='0.685714285714286' cy='0.545714285714286'  r='0.005' stroke='black' stroke-width='0.001' fill='none'/>
 	<circle cx='0.291428571428571' cy='0.565'  r='0.005' stroke='black' stroke-width='0.001' fill='none'/>
 	<circle cx='0.317142857142857' cy='0.564285714285714'  r='0.005' stroke='black' stroke-width='0.001' fill='none'/>
 	<circle cx='0.341428571428571' cy='0.565'  r='0.005' stroke='black' stroke-width='0.001' fill='none'/>

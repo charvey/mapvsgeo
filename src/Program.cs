@@ -8,28 +8,29 @@ namespace mapvsgeo
 {
     class Program
     {
-	    private static List<MapLine> MapLines => new List<MapLine>
-	    {
+        private static List<MapLine> MapLines => new List<MapLine>
+        {
 		    //google_rail
 		    new MapLine("AIR", StopsFromTrip("AIR_401_V1_M")),
-		    new MapLine("CHE", StopsFromTrip("CHE_5712_V5_M")),
-		    new MapLine("CHW", StopsFromTrip("CHW_807_V5_M")),
-		    new MapLine("LAN", StopsFromTrip("LAN_516_V77_M").Take(5).Concat(StopsFromTrip("LAN_6506_V5_M").Skip(4)).ToArray()),
-		    new MapLine("MED", StopsFromTrip("MED_309_V5_M")),
+            new MapLine("CHE", StopsFromTrip("CHE_5712_V5_M")),
+            new MapLine("CHW", StopsFromTrip("CHW_807_V5_M")),
+            new MapLine("LAN", StopsFromTrip("LAN_516_V77_M").Take(5).Concat(StopsFromTrip("LAN_6506_V5_M").Skip(4)).ToArray()),
+            new MapLine("MED", StopsFromTrip("MED_309_V5_M")),
             new MapLine("FOX", StopsFromTrip("FOX_812_V5_M")),
             new MapLine("NOR", StopsFromTrip("NOR_216_V5_M")),
-		    new MapLine("PAO", StopsFromTrip("PAO_509_V5_M")),
-		    new MapLine("CYN", StopsFromTrip("CYN_1055_V5_M")),
-		    new MapLine("TRE", StopsFromTrip("TRE_705_V5_M")),
-		    new MapLine("WAR", new string[0]),
-		    new MapLine("WIL", StopsFromTrip("WIL_9243_V5_M")),
-		    new MapLine("WTR", new string[0]),
+            new MapLine("PAO", StopsFromTrip("PAO_509_V5_M")),
+            new MapLine("CYN", StopsFromTrip("CYN_1055_V5_M")),
+            new MapLine("TRE", StopsFromTrip("TRE_705_V5_M")),
+            new MapLine("WAR", StopsFromTrip("WAR_408_V5_M")),
+            new MapLine("WIL", StopsFromTrip("WIL_9243_V5_M")),
+            new MapLine("WTR", new []{ "90406"}.Concat(StopsFromTrip("WTR_6322_V5_M")).ToArray()),
 		    //google_bus
-		    /* Still need trolleys and chinatown subway */
+		    /* Still need trolleys */
 		    new MapLine("16184", StopsFromTrip("554917")), //101
             new MapLine("16186", StopsFromTrip("555422")), //102
-            new MapLine("16301", new string[0]), //BSL
-		    new MapLine("16303", StopsFromTrip("588669")), //MFL
+            new MapLine("16301", StopsFromTrip("586267")), //BSL
+            new MapLine("16301", StopsFromTrip("586164")), //Broad Ridge Spur WARNING the wrong fairmount is being used
+            new MapLine("16303", StopsFromTrip("588669")), //MFL
 		    new MapLine("16210", StopsFromTrip("666614")), //NHSL
 		    ////patco
 		    //new MapLine("1", new string[0]) //PATCO
