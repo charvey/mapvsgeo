@@ -62,15 +62,20 @@ namespace mapvsgeo
         {
 			Files.Foo();
 
+            if (!File.Exists("../../../geo.png"))
+                Files.Download("https://maps.googleapis.com/maps/api/staticmap?size=1400x1400&center=39.952,-75.258&zoom=9&scale=2", "../../../geo.png");
+            if (!File.Exists("../../../map.jpg"))
+                Files.Download("http://www.septa.org/site/images/system-map-1400-lrg-03.30.17.jpg", "../../../map.jpg");
+
             var mapNormalizer = Normalizer(0, 1400, 0, 1400);
-            var geoNormalizer = Normalizer(
-                GeoPoints.Values.Min(p => p.X), GeoPoints.Values.Max(p => p.X),
-                GeoPoints.Values.Max(p => p.Y), GeoPoints.Values.Min(p => p.Y)
-            );
+            //These coordinates are approximately 60 miles by 60 miles
+            //The background image is zoomed to about 90 miles by 90 miles
+            //Therefore the image is stretched by 1.5 and offset by 0.25
+            var geoNormalizer = Normalizer(-75.823, -74.693, 40.387, 39.517);
 
-	        const string duration = "2.5s";
+            const string duration = "2.5s";
 
-            using (var stream = new FileStream("../../../map.svg", FileMode.Create))
+            using (var stream = new FileStream("../../../mapvsgeo.svg", FileMode.Create))
             using (var writer = new StreamWriter(stream))
             {
                 writer.WriteLine("<svg viewBox='0 0 1 1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink'>");
@@ -79,11 +84,16 @@ namespace mapvsgeo
 		<animate id='maptogeo' attributeName='opacity' from='1' to='0' dur='{duration}' begin='0; geotomap.end' />
 		<animate id='geotomap' attributeName='opacity' from='0' to='1' dur='{duration}' begin='maptogeo.end' />
 	</image>");
+                writer.WriteLine($@"
+	<image xlink:href='geo.png' height='1.5' width='1.5' x='-0.25' y='-0.25'>
+		<animate attributeName='opacity' from='0' to='1' dur='{duration}' begin='0; geotomap.end' />
+		<animate attributeName='opacity' from='1' to='0' dur='{duration}' begin='maptogeo.end' />
+	</image>");
 
                 foreach (var mapLine in MapLines)
                 {
-	                var mapPoints = string.Join(" ", mapLine.Stops.Select(s => mapNormalizer(MapPoints.Get(s))).Select(p => p.X + "," + p.Y));
-	                var geoPoints = string.Join(" ", mapLine.Stops.Select(s => geoNormalizer(GeoPoints[s])).Select(p => p.X + "," + p.Y));
+                    var mapPoints = string.Join(" ", mapLine.Stops.Select(s => mapNormalizer(MapPoints.Get(s))).Select(p => p.X + "," + p.Y));
+                    var geoPoints = string.Join(" ", mapLine.Stops.Select(s => geoNormalizer(GeoPoints[s])).Select(p => p.X + "," + p.Y));
 
                     writer.WriteLine($@"
 	<polyline fill='none' stroke-width='0.005'>
@@ -105,21 +115,33 @@ namespace mapvsgeo
                 writer.WriteLine("</svg>");
             }
 
-            using (var stream = new FileStream("../../../geomatch.svg", FileMode.Create))
+            using (var stream = new FileStream("../../../map.svg", FileMode.Create))
             using (var writer = new StreamWriter(stream))
             {
                 writer.WriteLine("<svg viewBox='0 0 1 1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink'>");
-                writer.WriteLine($@"
-	<image xlink:href='geo2.jpg' height='1' width='1'>
-	</image>");
+                writer.WriteLine($@"<image xlink:href='map.jpg' height='1' width='1' />");
+
+                foreach (var mapLine in MapLines)
+                {
+	                var mapPoints = string.Join(" ", mapLine.Stops.Select(s => mapNormalizer(MapPoints.Get(s))).Select(p => p.X + "," + p.Y));
+
+                    writer.WriteLine($@"<polyline fill='none' stroke-width='0.005' points='{mapPoints}' stroke='#6B93AC' />");
+                }
+
+                writer.WriteLine("</svg>");
+            }
+
+            using (var stream = new FileStream("../../../geo.svg", FileMode.Create))
+            using (var writer = new StreamWriter(stream))
+            {
+                writer.WriteLine("<svg viewBox='0 0 1 1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink'>");
+                writer.WriteLine($@"<image xlink:href='geo.png' height='1.5' width='1.5' x='-0.25' y='-0.25' />");
 
                 foreach (var mapLine in MapLines)
                 {
                     var geoPoints = string.Join(" ", mapLine.Stops.Select(s => geoNormalizer(GeoPoints[s])).Select(p => p.X + "," + p.Y));
 
-                    writer.WriteLine($@"
-	<polyline fill='none' stroke-width='0.005'
-        points='{geoPoints}' stroke='#{RouteColors[mapLine.RouteId]}' />");
+                    writer.WriteLine($@"<polyline fill='none' stroke-width='0.005' points='{geoPoints}' stroke='#{RouteColors[mapLine.RouteId]}' />");
                 }
 
                 writer.WriteLine("</svg>");
@@ -136,8 +158,6 @@ namespace mapvsgeo
 			        var point = mapNormalizer(MapPoints.Get(stop));
 
 					writer.WriteLine($"\t<circle cx='{point.X}' cy='{point.Y}'  r='0.005' stroke='black' stroke-width='0.001' fill='none'/>");
-			        //writer.WriteLine($"\t<text x='{point.X + 0.05}' fill='orange' y='{point.Y}'>{StopNames.Get(stop)}</text>");
-			        //writer.WriteLine($"\t<text x='{point.X - 0.05}' fill='orange' y='{point.Y}'>{stop}</text>");
 				}
 
 		        writer.WriteLine("</svg>");
