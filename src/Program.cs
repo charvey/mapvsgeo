@@ -62,8 +62,9 @@ namespace mapvsgeo
         {
 			Files.Foo();
 
+            var center = new Geo.Geometries.Point(39.952, -75.258);
             if (!File.Exists("../../../geo.png"))
-                Files.Download("https://maps.googleapis.com/maps/api/staticmap?size=1400x1400&center=39.952,-75.258&zoom=9&scale=2", "../../../geo.png");
+                Files.Download($"https://maps.googleapis.com/maps/api/staticmap?size=640x640&center={center.Coordinate.Latitude},{center.Coordinate.Longitude}&zoom=9&scale=2", "../../../geo.png");
             if (!File.Exists("../../../map.jpg"))
                 Files.Download("http://www.septa.org/site/images/system-map-1400-lrg-03.30.17.jpg", "../../../map.jpg");
 
@@ -71,7 +72,15 @@ namespace mapvsgeo
             //These coordinates are approximately 60 miles by 60 miles
             //The background image is zoomed to about 90 miles by 90 miles
             //Therefore the image is stretched by 1.5 and offset by 0.25
-            var geoNormalizer = Normalizer(-75.823, -74.693, 40.387, 39.517);
+            var geoEdgeLength = new Geo.Measure.Distance(60, Geo.Measure.DistanceUnit.Mile);
+            var geoImageEdgeLength = new Geo.Measure.Distance(90, Geo.Measure.DistanceUnit.Mile);
+            var geoImageScale = geoImageEdgeLength.SiValue / geoEdgeLength.SiValue;
+            var geoImageOffset = 0 - (geoImageScale - 1) / 2;
+            var top = Geo.GeoContext.Current.GeodeticCalculator.CalculateOrthodromicLine(center, 0, geoEdgeLength.SiValue/2).Coordinate2.Latitude;
+            var right= Geo.GeoContext.Current.GeodeticCalculator.CalculateOrthodromicLine(center, 90, geoEdgeLength.SiValue/2).Coordinate2.Longitude;
+            var bottom = Geo.GeoContext.Current.GeodeticCalculator.CalculateOrthodromicLine(center, 180, geoEdgeLength.SiValue/2).Coordinate2.Latitude;
+            var left= Geo.GeoContext.Current.GeodeticCalculator.CalculateOrthodromicLine(center, 270, geoEdgeLength.SiValue/2).Coordinate2.Longitude;
+            var geoNormalizer = Normalizer(left, right, top, bottom);
 
             const string duration = "2.5s";
 
@@ -85,7 +94,7 @@ namespace mapvsgeo
 		<animate id='geotomap' attributeName='opacity' from='0' to='1' dur='{duration}' begin='maptogeo.end' />
 	</image>");
                 writer.WriteLine($@"
-	<image xlink:href='geo.png' height='1.5' width='1.5' x='-0.25' y='-0.25'>
+	<image xlink:href='geo.png' height='{geoImageScale}' width='{geoImageScale}' x='{geoImageOffset}' y='{geoImageOffset}'>
 		<animate attributeName='opacity' from='0' to='1' dur='{duration}' begin='0; geotomap.end' />
 		<animate attributeName='opacity' from='1' to='0' dur='{duration}' begin='maptogeo.end' />
 	</image>");
@@ -135,7 +144,7 @@ namespace mapvsgeo
             using (var writer = new StreamWriter(stream))
             {
                 writer.WriteLine("<svg viewBox='0 0 1 1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink'>");
-                writer.WriteLine($@"<image xlink:href='geo.png' height='1.5' width='1.5' x='-0.25' y='-0.25' />");
+                writer.WriteLine($@"<image xlink:href='geo.png' height='{geoImageScale}' width='{geoImageScale}' x='{geoImageOffset}' y='{geoImageOffset}' />");
 
                 foreach (var mapLine in MapLines)
                 {
