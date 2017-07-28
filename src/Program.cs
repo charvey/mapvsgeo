@@ -1,12 +1,13 @@
-﻿using System;
+﻿using Data.Gtfs;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Data.Gtfs;
+using System.Net;
 
 namespace mapvsgeo
 {
-    class Program
+	class Program
     {
         private static List<MapLine> MapLines => new List<MapLine>
         {
@@ -84,17 +85,20 @@ namespace mapvsgeo
 
             const string duration = "2.5s";
 
+			var mapImage = "http://www.septa.org/site/images/system-map-1400-lrg-03.30.17.jpg";
+			var geoImage = WebUtility.HtmlEncode($"https://maps.googleapis.com/maps/api/staticmap?size=640x640&center={center.Coordinate.Latitude},{center.Coordinate.Longitude}&zoom=9&scale=2");
+
             using (var stream = new FileStream("../../../mapvsgeo.svg", FileMode.Create))
             using (var writer = new StreamWriter(stream))
             {
                 writer.WriteLine("<svg viewBox='0 0 1 1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink'>");
                 writer.WriteLine($@"
-	<image xlink:href='map.jpg' height='1' width='1'>
+	<image xlink:href='{mapImage}' height='1' width='1'>
 		<animate id='maptogeo' attributeName='opacity' from='1' to='0' dur='{duration}' begin='0; geotomap.end' />
 		<animate id='geotomap' attributeName='opacity' from='0' to='1' dur='{duration}' begin='maptogeo.end' />
 	</image>");
                 writer.WriteLine($@"
-	<image xlink:href='geo.png' height='{geoImageScale}' width='{geoImageScale}' x='{geoImageOffset}' y='{geoImageOffset}'>
+	<image xlink:href='{geoImage}' height='{geoImageScale}' width='{geoImageScale}' x='{geoImageOffset}' y='{geoImageOffset}'>
 		<animate attributeName='opacity' from='0' to='1' dur='{duration}' begin='0; geotomap.end' />
 		<animate attributeName='opacity' from='1' to='0' dur='{duration}' begin='maptogeo.end' />
 	</image>");
@@ -128,7 +132,7 @@ namespace mapvsgeo
             using (var writer = new StreamWriter(stream))
             {
                 writer.WriteLine("<svg viewBox='0 0 1 1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink'>");
-                writer.WriteLine($@"<image xlink:href='map.jpg' height='1' width='1' />");
+                writer.WriteLine($@"<image xlink:href='{mapImage}' height='1' width='1' />");
 
                 foreach (var mapLine in MapLines)
                 {
@@ -144,7 +148,7 @@ namespace mapvsgeo
             using (var writer = new StreamWriter(stream))
             {
                 writer.WriteLine("<svg viewBox='0 0 1 1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink'>");
-                writer.WriteLine($@"<image xlink:href='geo.png' height='{geoImageScale}' width='{geoImageScale}' x='{geoImageOffset}' y='{geoImageOffset}' />");
+				writer.WriteLine($@"<image xlink:href='{geoImage}' height='{geoImageScale}' width='{geoImageScale}' x='{geoImageOffset}' y='{geoImageOffset}' />");
 
                 foreach (var mapLine in MapLines)
                 {
@@ -160,7 +164,7 @@ namespace mapvsgeo
 	        using (var writer = new StreamWriter(stream))
 	        {
 		        writer.WriteLine("<svg viewBox='0 0 1 1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink'>");
-		        writer.WriteLine("\t<image xlink:href='map.jpg' height='1' width='1'/>");
+				writer.WriteLine($"\t<image xlink:href='{mapImage}' height='1' width='1'/>");
 
 		        foreach (var stop in MapLines.SelectMany(r => r.Stops).Distinct())
 		        {
