@@ -59,56 +59,75 @@ namespace mapvsgeo
 
 	    private static Dictionary<string, string> RouteColors => feed.Value.Routes.ToDictionary(r => r.RouteId, r => r.RouteColor);
 
-        static void Main(string[] args)
-        {
+		static void Main(string[] args)
+		{
 			Files.Foo();
 
-            var center = new Geo.Geometries.Point(39.952, -75.258);
-            if (!File.Exists("../../../geo.png"))
-                Files.Download($"https://maps.googleapis.com/maps/api/staticmap?size=640x640&center={center.Coordinate.Latitude},{center.Coordinate.Longitude}&zoom=9&scale=2", "../../../geo.png");
-            if (!File.Exists("../../../map.jpg"))
-                Files.Download("http://www.septa.org/site/images/system-map-1400-lrg-03.30.17.jpg", "../../../map.jpg");
+			var outputDirectory = "../../../";
 
-            var mapNormalizer = Normalizer(0, 1400, 0, 1400);
-            //These coordinates are approximately 60 miles by 60 miles
-            //The background image is zoomed to about 90 miles by 90 miles
-            //Therefore the image is stretched by 1.5 and offset by 0.25
-            var geoEdgeLength = new Geo.Measure.Distance(60, Geo.Measure.DistanceUnit.Mile);
-            var geoImageEdgeLength = new Geo.Measure.Distance(90, Geo.Measure.DistanceUnit.Mile);
-            var geoImageScale = geoImageEdgeLength.SiValue / geoEdgeLength.SiValue;
-            var geoImageOffset = 0 - (geoImageScale - 1) / 2;
-            var top = Geo.GeoContext.Current.GeodeticCalculator.CalculateOrthodromicLine(center, 0, geoEdgeLength.SiValue/2).Coordinate2.Latitude;
-            var right= Geo.GeoContext.Current.GeodeticCalculator.CalculateOrthodromicLine(center, 90, geoEdgeLength.SiValue/2).Coordinate2.Longitude;
-            var bottom = Geo.GeoContext.Current.GeodeticCalculator.CalculateOrthodromicLine(center, 180, geoEdgeLength.SiValue/2).Coordinate2.Latitude;
-            var left= Geo.GeoContext.Current.GeodeticCalculator.CalculateOrthodromicLine(center, 270, geoEdgeLength.SiValue/2).Coordinate2.Longitude;
-            var geoNormalizer = Normalizer(left, right, top, bottom);
+			LosAngeles(outputDirectory: outputDirectory);
+			Philadelphia(outputDirectory: outputDirectory);
+		}
+		static void LosAngeles(string outputDirectory)
+		{
+			General(
+				outputDirectory: outputDirectory,
+				name: "Los Angeles",
+				mapImage: "http://s3-us-west-2.amazonaws.com/media.thesource.metro.net/wp-content/uploads/2016/09/07152145/rail_map.jpg",
+				center: new Geo.Geometries.Point(34.039, -118.264)
+			);
+		}
+		static void Philadelphia(string outputDirectory)
+		{
+			General(
+				outputDirectory: outputDirectory,
+				name: "Philadelphia",
+				mapImage: "http://www.septa.org/site/images/system-map-1400-lrg-03.30.17.jpg",
+				center: new Geo.Geometries.Point(39.952, -75.258)
+			);
+		}
+		static void General(string outputDirectory,string name,string mapImage,
+			Geo.Geometries.Point center)
+		{
+			var mapNormalizer = Normalizer(0, 1400, 0, 1400);
+			//These coordinates are approximately 60 miles by 60 miles
+			//The background image is zoomed to about 90 miles by 90 miles
+			//Therefore the image is stretched by 1.5 and offset by 0.25
+			var geoEdgeLength = new Geo.Measure.Distance(60, Geo.Measure.DistanceUnit.Mile);
+			var geoImageEdgeLength = new Geo.Measure.Distance(90, Geo.Measure.DistanceUnit.Mile);
+			var geoImageScale = geoImageEdgeLength.SiValue / geoEdgeLength.SiValue;
+			var geoImageOffset = 0 - (geoImageScale - 1) / 2;
+			var top = Geo.GeoContext.Current.GeodeticCalculator.CalculateOrthodromicLine(center, 0, geoEdgeLength.SiValue / 2).Coordinate2.Latitude;
+			var right = Geo.GeoContext.Current.GeodeticCalculator.CalculateOrthodromicLine(center, 90, geoEdgeLength.SiValue / 2).Coordinate2.Longitude;
+			var bottom = Geo.GeoContext.Current.GeodeticCalculator.CalculateOrthodromicLine(center, 180, geoEdgeLength.SiValue / 2).Coordinate2.Latitude;
+			var left = Geo.GeoContext.Current.GeodeticCalculator.CalculateOrthodromicLine(center, 270, geoEdgeLength.SiValue / 2).Coordinate2.Longitude;
+			var geoNormalizer = Normalizer(left, right, top, bottom);
 
-            const string duration = "2.5s";
+			const string duration = "2.5s";
 
-			var mapImage = "http://www.septa.org/site/images/system-map-1400-lrg-03.30.17.jpg";
 			var geoImage = WebUtility.HtmlEncode($"https://maps.googleapis.com/maps/api/staticmap?size=640x640&center={center.Coordinate.Latitude},{center.Coordinate.Longitude}&zoom=9&scale=2");
 
-            using (var stream = new FileStream("../../../mapvsgeo.svg", FileMode.Create))
-            using (var writer = new StreamWriter(stream))
-            {
-                writer.WriteLine("<svg viewBox='0 0 1 1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink'>");
-                writer.WriteLine($@"
+			using (var stream = new FileStream(Path.Combine(outputDirectory, $"{name} mapvsgeo.svg"), FileMode.Create))
+			using (var writer = new StreamWriter(stream))
+			{
+				writer.WriteLine("<svg viewBox='0 0 1 1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink'>");
+				writer.WriteLine($@"
 	<image xlink:href='{mapImage}' height='1' width='1'>
 		<animate id='maptogeo' attributeName='opacity' from='1' to='0' dur='{duration}' begin='0; geotomap.end' />
 		<animate id='geotomap' attributeName='opacity' from='0' to='1' dur='{duration}' begin='maptogeo.end' />
 	</image>");
-                writer.WriteLine($@"
+				writer.WriteLine($@"
 	<image xlink:href='{geoImage}' height='{geoImageScale}' width='{geoImageScale}' x='{geoImageOffset}' y='{geoImageOffset}'>
 		<animate attributeName='opacity' from='0' to='1' dur='{duration}' begin='0; geotomap.end' />
 		<animate attributeName='opacity' from='1' to='0' dur='{duration}' begin='maptogeo.end' />
 	</image>");
 
-                foreach (var mapLine in MapLines)
-                {
-                    var mapPoints = string.Join(" ", mapLine.Stops.Select(s => mapNormalizer(MapPoints.Get(s))).Select(p => p.X + "," + p.Y));
-                    var geoPoints = string.Join(" ", mapLine.Stops.Select(s => geoNormalizer(GeoPoints[s])).Select(p => p.X + "," + p.Y));
+				foreach (var mapLine in MapLines)
+				{
+					var mapPoints = string.Join(" ", mapLine.Stops.Select(s => mapNormalizer(MapPoints.Get(s))).Select(p => p.X + "," + p.Y));
+					var geoPoints = string.Join(" ", mapLine.Stops.Select(s => geoNormalizer(GeoPoints[s])).Select(p => p.X + "," + p.Y));
 
-                    writer.WriteLine($@"
+					writer.WriteLine($@"
 	<polyline fill='none' stroke-width='0.005'>
 		<animate attributeName='points' dur='{duration}' fill='freeze' begin='0; geotomap.end'
 			from='{mapPoints}'
@@ -123,59 +142,59 @@ namespace mapvsgeo
 		<animate attributeName='stroke' dur='{duration}' fill='freeze' begin='maptogeo.end'
 			from='#{RouteColors[mapLine.RouteId]}' to='#6B93AC' />
 	</polyline>");
-                }
+				}
 
-                writer.WriteLine("</svg>");
-            }
+				writer.WriteLine("</svg>");
+			}
 
-            using (var stream = new FileStream("../../../map.svg", FileMode.Create))
-            using (var writer = new StreamWriter(stream))
-            {
-                writer.WriteLine("<svg viewBox='0 0 1 1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink'>");
-                writer.WriteLine($@"<image xlink:href='{mapImage}' height='1' width='1' />");
+			using (var stream = new FileStream(Path.Combine(outputDirectory, $"{name} map.svg"), FileMode.Create))
+			using (var writer = new StreamWriter(stream))
+			{
+				writer.WriteLine("<svg viewBox='0 0 1 1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink'>");
+				writer.WriteLine($@"<image xlink:href='{mapImage}' height='1' width='1' />");
 
-                foreach (var mapLine in MapLines)
-                {
-	                var mapPoints = string.Join(" ", mapLine.Stops.Select(s => mapNormalizer(MapPoints.Get(s))).Select(p => p.X + "," + p.Y));
+				foreach (var mapLine in MapLines)
+				{
+					var mapPoints = string.Join(" ", mapLine.Stops.Select(s => mapNormalizer(MapPoints.Get(s))).Select(p => p.X + "," + p.Y));
 
-                    writer.WriteLine($@"<polyline fill='none' stroke-width='0.005' points='{mapPoints}' stroke='#6B93AC' />");
-                }
+					writer.WriteLine($@"<polyline fill='none' stroke-width='0.005' points='{mapPoints}' stroke='#6B93AC' />");
+				}
 
-                writer.WriteLine("</svg>");
-            }
+				writer.WriteLine("</svg>");
+			}
 
-            using (var stream = new FileStream("../../../geo.svg", FileMode.Create))
-            using (var writer = new StreamWriter(stream))
-            {
-                writer.WriteLine("<svg viewBox='0 0 1 1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink'>");
+			using (var stream = new FileStream(Path.Combine(outputDirectory, $"{name} geo.svg"), FileMode.Create))
+			using (var writer = new StreamWriter(stream))
+			{
+				writer.WriteLine("<svg viewBox='0 0 1 1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink'>");
 				writer.WriteLine($@"<image xlink:href='{geoImage}' height='{geoImageScale}' width='{geoImageScale}' x='{geoImageOffset}' y='{geoImageOffset}' />");
 
-                foreach (var mapLine in MapLines)
-                {
-                    var geoPoints = string.Join(" ", mapLine.Stops.Select(s => geoNormalizer(GeoPoints[s])).Select(p => p.X + "," + p.Y));
+				foreach (var mapLine in MapLines)
+				{
+					var geoPoints = string.Join(" ", mapLine.Stops.Select(s => geoNormalizer(GeoPoints[s])).Select(p => p.X + "," + p.Y));
 
-                    writer.WriteLine($@"<polyline fill='none' stroke-width='0.005' points='{geoPoints}' stroke='#{RouteColors[mapLine.RouteId]}' />");
-                }
+					writer.WriteLine($@"<polyline fill='none' stroke-width='0.005' points='{geoPoints}' stroke='#{RouteColors[mapLine.RouteId]}' />");
+				}
 
-                writer.WriteLine("</svg>");
-            }
+				writer.WriteLine("</svg>");
+			}
 
-            using (var stream = new FileStream("../../../debug.svg", FileMode.Create))
-	        using (var writer = new StreamWriter(stream))
-	        {
-		        writer.WriteLine("<svg viewBox='0 0 1 1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink'>");
+			using (var stream = new FileStream(Path.Combine(outputDirectory, $"{name} debug.svg"), FileMode.Create))
+			using (var writer = new StreamWriter(stream))
+			{
+				writer.WriteLine("<svg viewBox='0 0 1 1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink'>");
 				writer.WriteLine($"\t<image xlink:href='{mapImage}' height='1' width='1'/>");
 
-		        foreach (var stop in MapLines.SelectMany(r => r.Stops).Distinct())
-		        {
-			        var point = mapNormalizer(MapPoints.Get(stop));
+				foreach (var stop in MapLines.SelectMany(r => r.Stops).Distinct())
+				{
+					var point = mapNormalizer(MapPoints.Get(stop));
 
 					writer.WriteLine($"\t<circle cx='{point.X}' cy='{point.Y}'  r='0.005' stroke='black' stroke-width='0.001' fill='none'/>");
 				}
 
-		        writer.WriteLine("</svg>");
-	        }
-        }
+				writer.WriteLine("</svg>");
+			}
+		}
 
 			static Func<Point, Point> Normalizer(double leftX, double rightX, double topY, double bottomY)
         {
