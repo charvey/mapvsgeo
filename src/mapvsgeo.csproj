@@ -50,6 +50,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ComparisonDetails.cs" />
     <Compile Include="Files.cs" />
     <Compile Include="Gtfs\AggregateGtfsFeed.cs" />
     <Compile Include="Gtfs\Calendar.cs" />
@@ -69,6 +70,7 @@
     <Compile Include="Gtfs\ZipFileGtfsFeed.cs" />
     <Compile Include="MapLine.cs" />
     <Compile Include="MapPoints.cs" />
+    <Compile Include="PageBuilder.cs" />
     <Compile Include="Point.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

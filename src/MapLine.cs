@@ -1,6 +1,6 @@
 namespace mapvsgeo
 {
-	class MapLine
+	public class MapLine
 	{
 		public string RouteId { get; }
 		public string Color { get; }

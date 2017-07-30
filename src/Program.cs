@@ -86,29 +86,44 @@ namespace mapvsgeo
 		{
 			Files.Foo();
 
-			var outputDirectory = "../../../";
+			var outputDirectory = "../../../docs";
+			if (Directory.Exists(outputDirectory))
+				Directory.Delete(outputDirectory);
+			Directory.CreateDirectory(outputDirectory);
 
-			LosAngeles(outputDirectory: outputDirectory);
-			Philadelphia(outputDirectory: outputDirectory);
+			var comparisons = new[]
+			{
+				new ComparisonDetails
+				{
+					Name= "Los Angeles",
+				MapImage= "http://s3-us-west-2.amazonaws.com/media.thesource.metro.net/wp-content/uploads/2016/09/07152145/rail_map.jpg",
+				Center= new Geo.Geometries.Point(34.039, -118.264),
+				MapLines= LosAngelesMapLines()
+				},
+				new ComparisonDetails
+				{
+					Name= "Philadelphia",
+				MapImage= "http://www.septa.org/site/images/system-map-1400-lrg-03.30.17.jpg",
+				Center= new Geo.Geometries.Point(39.952, -75.258),
+				MapLines= PhiladelphiaMapLines()
+				}
+			};
+			
+			foreach(var comparison in comparisons)
+			{
+				General(outputDirectory, comparison);
+			}
+			new PageBuilder().BuildPage(outputDirectory, comparisons);
+			
 		}
-		static void LosAngeles(string outputDirectory)
+		static void General(string outputDirectory, ComparisonDetails comparison)
 		{
 			General(
 				outputDirectory: outputDirectory,
-				name: "Los Angeles",
-				mapImage: "http://s3-us-west-2.amazonaws.com/media.thesource.metro.net/wp-content/uploads/2016/09/07152145/rail_map.jpg",
-				center: new Geo.Geometries.Point(34.039, -118.264),
-				mapLines: LosAngelesMapLines()
-			);
-		}
-		static void Philadelphia(string outputDirectory)
-		{
-			General(
-				outputDirectory: outputDirectory,
-				name: "Philadelphia",
-				mapImage: "http://www.septa.org/site/images/system-map-1400-lrg-03.30.17.jpg",
-				center: new Geo.Geometries.Point(39.952, -75.258),
-				mapLines: PhiladelphiaMapLines()
+				name: comparison.Name,
+				mapImage: comparison.MapImage,
+				center: comparison.Center,
+				mapLines: comparison.MapLines
 			);
 		}
 		static void General(string outputDirectory, string name, string mapImage,
