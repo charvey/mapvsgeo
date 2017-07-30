@@ -5,7 +5,7 @@
 		<animate id='geotomap' attributeName='opacity' from='0' to='1' dur='2.5s' begin='maptogeo.end' />
 	</image>
 
-	<image xlink:href='https://maps.googleapis.com/maps/api/staticmap?size=640x640&amp;center=39.952,-75.258&amp;zoom=9&amp;scale=2' height='1.5' width='1.5' x='-0.25' y='-0.25'>
+	<image xlink:href='http://maps.googleapis.com/maps/api/staticmap?size=640x640&amp;center=39.952,-75.258&amp;zoom=9&amp;scale=2' height='1.5' width='1.5' x='-0.25' y='-0.25'>
 		<animate attributeName='opacity' from='0' to='1' dur='2.5s' begin='0; geotomap.end' />
 		<animate attributeName='opacity' from='1' to='0' dur='2.5s' begin='maptogeo.end' />
 	</image>

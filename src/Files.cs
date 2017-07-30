@@ -29,7 +29,7 @@ namespace mapvsgeo
                 Download("http://www.ridepatco.org/developers/PortAuthorityTransitCorporation.zip", "PortAuthorityTransitCorporation.zip");
 
 			if (!File.Exists("LACMTA.zip"))
-				Download("https://gitlab.com/LACMTA/gtfs_rail/blob/master/gtfs_rail.zip", "LACMTA.zip");
+				Download("https://gitlab.com/LACMTA/gtfs_rail/raw/master/gtfs_rail.zip", "LACMTA.zip");
         }
 
 		private static void Extract(string zipPath)
